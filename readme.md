@@ -86,4 +86,3 @@ A lightweight Python "agent" on a server tails a log file and sends new lines to
     Refine the graphics and user interface. Add counters for total requests, error rates, etc.
 - **Deliverable:**  
     A complete, deployed application that provides a novel and intuitive way to monitor server health.
-
