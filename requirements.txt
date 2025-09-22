@@ -5,3 +5,4 @@ websocket-client==1.6.4
 watchdog==2.1.9
 pydantic==2.5.0
 python-multipart==0.0.6
+

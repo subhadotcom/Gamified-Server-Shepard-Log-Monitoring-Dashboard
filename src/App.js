@@ -3,6 +3,8 @@ import Sketch from 'react-p5';
 import './index.css';
 
 function App() {
+  const backendBaseUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
+  const wsUrl = backendBaseUrl.replace(/^http/, 'ws') + '/ws';
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState([]);
   const [stats, setStats] = useState({
@@ -19,7 +21,7 @@ function App() {
   // WebSocket connection
   useEffect(() => {
     const connectWebSocket = () => {
-      const ws = new WebSocket('ws://localhost:8000/ws');
+      const ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {
         console.log('WebSocket connected');
@@ -73,7 +75,7 @@ function App() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://localhost:8000/stats');
+        const response = await fetch(`${backendBaseUrl}/stats`);
         const data = await response.json();
         // Map backend snake_case to frontend camelCase
         const mapped = {
@@ -231,7 +233,7 @@ function App() {
   // Acknowledge error
   const acknowledgeError = async (logId) => {
     try {
-      await fetch('http://localhost:8000/acknowledge', {
+      await fetch(`${backendBaseUrl}/acknowledge`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

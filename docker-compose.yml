@@ -48,3 +48,4 @@ services:
     volumes:
       - ./logs:/var/log/server-shepherd
     restart: unless-stopped
+
