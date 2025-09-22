@@ -1,88 +1,237 @@
-# Gamified "Server Shepherd" Log Monitoring Dashboard
+# 🐑 Server Shepherd - Gamified Log Monitoring Dashboard
 
-## Project Overview
+A fun and engaging way to monitor server logs by visualizing them as a flock of sheep in a virtual field. Watch your server health come to life with animated sheep that represent different types of log entries!
 
-### Introduction
+## 🌟 Features
 
-This project transforms the typically dry task of server log monitoring into an engaging, visual, and intuitive "game." It provides an at-a-glance, metaphorical view of server health, making it easier to spot problems.
+- **Real-time Log Monitoring**: Stream logs from your server in real-time
+- **Gamified Visualization**: Logs appear as animated sheep in a virtual field
+- **Interactive Dashboard**: Click on error sheep to view details and acknowledge issues
+- **Live Statistics**: Track success rates, error counts, and system health
+- **Beautiful UI**: Modern, responsive interface with smooth animations
 
-### Objectives
+## 🏗️ Architecture
 
-- **Stream log data** from a server to a central application in real-time.
-- **Develop a web dashboard** that visualizes logs metaphorically (e.g., as a flock of sheep).
-- **Enable real-time interaction** with the visualized logs.
+```
+┌─────────────────┐    TCP     ┌─────────────────┐    WebSocket    ┌─────────────────┐
+│   Log Agent     │ ──────────► │   Backend       │ ──────────────► │   Frontend      │
+│   (Python)      │            │   (FastAPI)     │                 │   (React + p5.js)│
+└─────────────────┘            └─────────────────┘                 └─────────────────┘
+```
 
-### Scope
+- **Log Agent**: Python script using `watchdog` to monitor log files
+- **Backend**: FastAPI server with WebSocket support for real-time communication
+- **Frontend**: React application with p5.js for canvas-based animations
 
-- **In-Scope:**  
-    - Log-shipping agent  
-    - Central processing server  
-    - Web-based visualization dashboard for a single log type (e.g., NGINX access logs)
+## 🚀 Quick Start
 
-- **Out-of-Scope:**  
-    - Historical log analysis  
-    - Complex alerting rules  
-    - Support for multiple log formats out of the box
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Docker (optional)
+
+### Option 1: Docker Compose (Recommended)
+
+1. **Clone and start the services:**
+   ```bash
+   git clone <repository-url>
+   cd server-shepherd
+   docker-compose up --build
+   ```
+
+2. **Access the dashboard:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
+
+### Option 2: Manual Setup
+
+1. **Backend Setup:**
+   ```bash
+   # Install Python dependencies
+   pip install -r requirements.txt
+   
+   # Start the backend
+   python backend.py
+   ```
+
+2. **Frontend Setup:**
+   ```bash
+   # Install Node.js dependencies
+   npm install
+   
+   # Start the frontend
+   npm start
+   ```
+
+3. **Log Agent Setup:**
+   ```bash
+   # Generate sample logs
+   python sample_log_generator.py sample.log 1
+   
+   # In another terminal, start the log agent
+   python log_agent.py sample.log localhost 9999
+   ```
+
+## 🎮 How to Use
+
+### The Dashboard
+
+1. **Sheep Visualization**: Each log entry appears as a sheep in the field
+   - 🟢 **Green Sheep**: Successful requests (200-399 status codes)
+   - 🔴 **Red Sheep**: Error requests (400+ status codes)
+   - 🟡 **Yellow Sheep**: Healed/acknowledged errors
+
+2. **Interactive Features**:
+   - Click on red (error) sheep to view log details
+   - Acknowledge errors to "heal" the sheep
+   - Clear all sheep to reset the field
+   - View real-time statistics in the sidebar
+
+3. **Statistics Panel**:
+   - Total log count
+   - Success/error counts
+   - Error rate percentage
+   - Connection status
+
+### Monitoring Your Own Logs
+
+To monitor your own log files:
+
+```bash
+# Start the backend first
+python backend.py
+
+# Then start the log agent pointing to your log file
+python log_agent.py /var/log/nginx/access.log localhost 9999
+```
+
+The system currently supports NGINX access log format. The backend automatically parses:
+- IP addresses
+- HTTP methods and paths
+- Status codes
+- Response sizes
+- User agents
+
+## 🔧 Configuration
+
+### Backend Configuration
+
+The backend runs on:
+- **HTTP API**: Port 8000
+- **TCP Log Receiver**: Port 9999
+- **WebSocket**: ws://localhost:8000/ws
+
+### Log Agent Configuration
+
+```bash
+python log_agent.py <log_file_path> [backend_host] [backend_port]
+```
+
+Example:
+```bash
+python log_agent.py /var/log/nginx/access.log localhost 9999
+```
+
+## 📊 API Endpoints
+
+- `GET /` - Basic info and health check
+- `GET /stats` - Current statistics
+- `GET /logs` - Recent log entries
+- `POST /acknowledge` - Acknowledge an error
+- `WebSocket /ws` - Real-time log stream
+
+## 🐳 Docker Services
+
+- **backend**: FastAPI server with WebSocket support
+- **frontend**: React application served by nginx
+- **log-agent**: Monitors log files and sends data to backend
+- **log-generator**: Generates sample logs for testing
+
+## 🎨 Customization
+
+### Adding New Log Formats
+
+To support additional log formats, modify the `parse_nginx_log()` function in `backend.py`:
+
+```python
+def parse_custom_log(log_line: str) -> Dict[str, Any]:
+    # Your custom parsing logic here
+    return {
+        "status_code": 200,
+        "ip": "127.0.0.1",
+        "method": "GET",
+        "path": "/",
+        # ... other fields
+    }
+```
+
+### Customizing Sheep Behavior
+
+Modify the sheep animation logic in `src/App.js`:
+
+```javascript
+const createSheep = (logData) => {
+    // Customize sheep properties
+    const newSheep = {
+        // ... existing properties
+        customProperty: "value"
+    };
+};
+```
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+server-shepherd/
+├── backend.py              # FastAPI backend server
+├── log_agent.py            # Log monitoring agent
+├── sample_log_generator.py # Sample log generator
+├── requirements.txt        # Python dependencies
+├── package.json           # Node.js dependencies
+├── src/
+│   ├── App.js             # Main React component
+│   ├── index.js           # React entry point
+│   └── index.css          # Styles
+├── public/
+│   └── index.html         # HTML template
+├── Dockerfile.backend     # Backend Docker image
+├── Dockerfile.frontend    # Frontend Docker image
+└── docker-compose.yml     # Docker services
+```
+
+### Running Tests
+
+```bash
+# Backend tests
+python -m pytest tests/
+
+# Frontend tests
+npm test
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [FastAPI](https://fastapi.tiangolo.com/)
+- Visualizations powered by [p5.js](https://p5js.org/)
+- Frontend built with [React](https://reactjs.org/)
+- Log monitoring with [watchdog](https://python-watchdog.readthedocs.io/)
 
 ---
 
-## System Architecture & Technology
-
-### High-Level Architecture
-
-A lightweight Python "agent" on a server tails a log file and sends new lines to a central backend. The backend parses these logs and broadcasts structured data via WebSockets to the frontend, which updates a graphical simulation.
-
-### Technology Stack
-
-- **Log Agent:** Python (`watchdog` library)
-- **Backend:** Python, FastAPI, WebSockets
-- **Frontend:** React.js, p5.js or Three.js (for graphics)
-- **DevOps:** Docker, Git
-
----
-
-## Phase-by-Phase Implementation Plan
-
-### Phase 1: Log Streaming
-
-- **Agent:**  
-    Write a simple Python script using the `watchdog` library to monitor a log file for changes. When a new line is added, the script sends it over a simple TCP socket.
-- **Backend:**  
-    Create a FastAPI application that listens on a TCP port to receive the raw log lines from the agent.
-- **Deliverable:**  
-    A functional agent-server pair where log lines written on the server are instantly printed to the console of the central application.
-
----
-
-### Phase 2: Visualization Foundation
-
-- **Backend:**  
-    Parse the raw log lines into a structured JSON format (e.g., `{"status_code": 200, "ip": "1.2.3.4"}`). Set up a WebSocket endpoint to broadcast this JSON data.
-- **Frontend:**  
-    Build a React application using p5.js for the canvas. Connect to the backend WebSocket and, upon receiving a message, draw a simple shape (e.g., a green circle for a 200 status, a red one for 500).
-- **Deliverable:**  
-    A live dashboard where new log entries appear as colored circles in real time.
-
----
-
-### Phase 3: Gamification and Interaction
-
-- **Frontend:**  
-    Replace the simple circles with "sheep" sprites. Give them simple animation, like wandering around a field. Make the red "error" sheep fall over.
-- **Backend:**  
-    Implement a simple API endpoint for "acknowledging" an error.
-- **Frontend:**  
-    Allow a user to click on a red sheep. This should display the full log message and have an "Acknowledge" button that calls the backend API. When acknowledged, the sheep could be visually "healed" or removed.
-- **Deliverable:**  
-    An interactive dashboard where users can not only see but also interact with the visualized server events.
-
----
-
-### Phase 4: Polish and Deployment
-
-- **Backend:**  
-    Document the setup for the log agent and the API. Containerize the application using Docker.
-- **Frontend:**  
-    Refine the graphics and user interface. Add counters for total requests, error rates, etc.
-- **Deliverable:**  
-    A complete, deployed application that provides a novel and intuitive way to monitor server health.
+**Happy Monitoring! 🐑✨**

@@ -1,0 +1,24 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+# Use npm install instead of ci to tolerate minor lock mismatches in this environment
+RUN npm install --no-audit --no-fund
+
+COPY public ./public
+COPY src ./src
+
+ENV PORT=3000 \
+    CI=true \
+    REACT_APP_BACKEND_URL=http://localhost:8000 \
+    CHOKIDAR_USEPOLLING=true \
+    WATCHPACK_POLLING=true \
+    WDS_SOCKET_PORT=0
+
+EXPOSE 3000
+
+# Use react-scripts dev server (for simplicity). In production you'd build and serve static files.
+CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+
+
