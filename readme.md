@@ -14,8 +14,8 @@ A fun and engaging way to monitor server logs by visualizing them as a flock of 
 
 ```
 ┌─────────────────┐    TCP     ┌─────────────────┐    WebSocket    ┌─────────────────┐
-│   Log Agent     │ ──────────► │   Backend       │ ──────────────► │   Frontend      │
-│   (Python)      │            │   (FastAPI)     │                 │   (React + p5.js)│
+│   Log Agent     │ ──────────►│   Backend       │ ──────────────► │   Frontend      │
+│   (Python)      │            │   (FastAPI)     │                 │  (React + p5.js)│
 └─────────────────┘            └─────────────────┘                 └─────────────────┘
 ```
 
