@@ -37,7 +37,9 @@ A fun and engaging way to monitor server logs by visualizing them as a flock of 
    ```bash
    git clone <repository-url>
    cd server-shepherd
-   docker-compose up --build
+   docker-compose up --build # to start the services
+   # Use -d flag to run in detached mode: docker-compose up -d --build
+   docker compose down # to stop the services
    ```
 
 2. **Access the dashboard:**
